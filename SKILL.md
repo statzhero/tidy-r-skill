@@ -1,23 +1,19 @@
 ---
 name: tidy-r
-description: |
+description: >
   Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code to modern patterns, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe operations, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidy selection, stringr patterns, naming conventions, and migration from base R or older tidyverse APIs. Use the R (btw) MCP tools to resolve function documentation and library references automatically.
 author: Ulrich Atz
 license: CC-BY-4.0
 metadata:
-  r_version: "4.5+"
-  tidyverse_version: "2.0+"
-  dplyr_version: "1.2+"
+  r_version: ">=4.5.0"
+  tidyverse_version: ">=2.0.0"
+  dplyr_version: ">=1.2.0"
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash, mcp__r-btw__*
 ---
 
-# Writing Modern Tidyverse R
+# Modern Tidyverse R Reference
 
-This skill covers modern tidyverse patterns for R 4.5+ and tidyverse 2.0+, style guidelines, and migration from legacy patterns.
-
-## Core philosophy
-
-R's tidyverse evolves. Code from blog posts and StackOverflow often uses deprecated APIs, magrittr pipes, or base R patterns where a modern tidyverse function exists. This skill encodes the current recommended approach so the model writes code that experienced R developers would recognize as idiomatic.
+Code from blog posts and StackOverflow often uses deprecated APIs, magrittr pipes, or base R patterns where a modern tidyverse function exists. This guide encodes the current recommended approach.
 
 ## When to use this skill
 
@@ -37,31 +33,28 @@ R's tidyverse evolves. Code from blog posts and StackOverflow often uses depreca
 - ggplot2 visualization (use the socviz skill)
 - Statistical modeling or Bayesian analysis
 
-## Instructions
+## Reference files
 
-When you receive a request, classify it and consult the appropriate reference:
+Consult the appropriate reference file for detailed patterns and examples:
 
-### Step 1: Classify the request
-
-| Category | Reference file | Trigger |
-|----------|---------------|---------|
-| **Joins** | [join-examples.md](references/join-examples.md) | Merging data, `*_join`, `join_by`, matching rows, lookup tables |
-| **Grouping & columns** | [grouping-examples.md](references/grouping-examples.md) | `.by`, `group_by`, `across`, `pick`, `reframe`, column operations |
-| **Recoding & replacing** | [recode-replace-examples.md](references/recode-replace-examples.md) | `case_when`, `recode_values`, `replace_values`, `replace_when`, `filter_out`, `when_any`, `when_all`, recoding, replacing, conditional updates |
-| **Strings** | [stringr-examples.md](references/stringr-examples.md) | String manipulation, regex, `str_*` functions, text processing |
+| Topic | Reference file | When to consult |
+|-------|---------------|-----------------|
+| **Joins** | [joins.md](references/joins.md) | Merging data, `*_join`, `join_by`, matching rows, lookup tables |
+| **Grouping & columns** | [grouping.md](references/grouping.md) | `.by`, `group_by`, `across`, `pick`, `reframe`, column operations |
+| **Recoding & replacing** | [recode-replace.md](references/recode-replace.md) | `recode_values`, `replace_values`, `replace_when`, `filter_out`, `when_any`, `when_all` |
+| **Strings** | [stringr.md](references/stringr.md) | String manipulation, regex, `str_*` functions, text processing |
+| **Tidy selection** | [tidyselect.md](references/tidyselect.md) | Column selection helpers, `where()`, `all_of()`, `any_of()`, boolean ops, `.data`/`.env` pronouns |
 | **Style** | [tidyverse-style.md](references/tidyverse-style.md) | Naming, formatting, spacing, error messages, `cli::cli_abort` |
-| **Migration** | [migration-examples.md](references/migration-examples.md) | Updating old code, base R conversion, deprecated functions |
+| **Migration** | [migration.md](references/migration.md) | Updating old code, base R conversion, deprecated functions |
 
-### Step 2: Read the reference file(s)
+For requests that span multiple topics (e.g., "rewrite this old code" touches migration + style), read multiple files.
 
-Use the Read tool to load the relevant reference. For requests that span multiple categories (e.g., "rewrite this old code" touches migration + style), read multiple files.
+## Core principles
 
-### Step 3: Apply core principles
-
-1. **Use modern tidyverse patterns** - Prioritize dplyr 1.2+ features, native pipe, and current APIs
-2. **Write readable code first** - Optimize only when necessary
-3. **Follow tidyverse style guide** - Consistent naming, spacing, and structure
-4. **Use R MCP tools** - Automatically resolve function documentation and library references without being asked. If the `mcp__r-btw__*` tools are unavailable, fall back to running R help via Bash (see below)
+1. **Use modern tidyverse patterns** -- Prioritize dplyr 1.2+ features, native pipe, and current APIs
+2. **Write readable code first** -- Optimize only when necessary
+3. **Follow tidyverse style guide** -- Consistent naming, spacing, and structure
+4. **Use R MCP tools** -- Automatically resolve function documentation and library references without being asked. If the `mcp__r-btw__*` tools are unavailable, fall back to running R help via Bash (see below)
 
 ### R documentation lookup fallback
 
@@ -81,15 +74,12 @@ Rscript --vanilla -e 'ls("package:dplyr")'
 Rscript --vanilla -e 'requireNamespace("tidyna", quietly = TRUE)'
 ```
 
-### Step 4: Write the code
-
-Follow the quick reference and anti-patterns below. When in doubt, consult the reference files.
-
 ## Quick reference
 
 ### Pipe and lambda
 
 - Always `|>`, never `%>%`
+- Use `_` placeholder for non-first arguments: `x |> f(1, y = _)`. The placeholder must be named and used exactly once.
 - Always `\(x)`, never `function(x)` or `~` in map/keep/etc.
 
 ### Code organization
@@ -98,7 +88,9 @@ Use newspaper style: high-level logic first, helpers below. Don't define functio
 
 ### Grouping
 
-- Use `.by` for per-operation grouping, never `group_by() |> ... |> ungroup()`
+- Prefer `.by` for per-operation grouping; use `group_by()` when grouping must persist across multiple operations
+- Never add `ungroup()` before or after `.by` -- it always returns ungrouped data
+- Consolidate multiple `mutate(.by = x)` calls into one when they share the same `.by`; keep separate only when `.by` differs or a later column depends on an earlier one
 - Place `.by` on its own line for readability
 
 ### Joins
@@ -107,7 +99,7 @@ Use newspaper style: high-level logic first, helpers below. Don't define functio
 - Use `relationship`, `unmatched`, `na_matches` for quality control
 - Use `tidylog::` prefix for join verification
 
-### Recoding and replacing (dplyr 1.2+)
+### Recoding and replacing (dplyr >=1.2.0)
 
 | Task | Function |
 |------|----------|
@@ -156,7 +148,7 @@ Use `cli::cli_abort()` with problem statement + bullets, never `stop()`.
 | `na_if(x, val)` | `replace_values(x, val ~ NA)` |
 | `qs::qsave()` / `qs::qread()` | `qs2::qs_save()` / `qs2::qs_read()` |
 
-## Complete workflow example
+## Example
 
 ```r
 library(tidyverse)
@@ -197,24 +189,24 @@ quarterly <- sales_enriched |>
     .by = c(region_name, quarter)
   ) |>
   mutate(
-    performance = revenue |>
-      replace_when(
-        total_revenue > 100000 ~ "high",
-        total_revenue > 50000 ~ "medium"
-      )
+    performance = case_when(
+      total_revenue > 100000 ~ "high",
+      total_revenue > 50000  ~ "medium",
+      .default = "low"
+    )
   ) |>
   arrange(region_name, quarter)
 ```
 
 ## Best practices
 
-1. **Load tidyna early** to eliminate `na.rm = TRUE` clutter
-2. **Use tidylog:: for joins** to verify row counts and match quality
-3. **Use `.unmatched = "error"`** in `case_when()` and `recode_values()` for defensive programming
-4. **Place `.by` on its own line** for readability
-5. **Prefer `filter_out()` over negated `filter()`** for NA-safe row removal
-6. **Use `recode_values()` over `case_match()`** (dplyr 1.2+ preferred API)
-7. **Use `replace_when()` over `case_when()` with `.default`** when updating a column in place
-8. **Name variables as nouns, functions as verbs** in snake_case
-9. **Explain "why" in comments**, not "what"
+1. **Name variables as nouns, functions as verbs** in snake_case
+2. **Explain "why" in comments**, not "what"
+3. **Place `.by` on its own line** for readability
+4. **Use `.unmatched = "error"`** in `case_when()` and `recode_values()` for defensive programming
+5. **Use `recode_values()` over `case_match()`** (dplyr 1.2+ preferred API)
+6. **Use `replace_when()` over `case_when()` with `.default`** when updating a column in place
+7. **Prefer `filter_out()` over negated `filter()`** for NA-safe row removal
+8. **Load tidyna early** to eliminate `na.rm = TRUE` clutter
+9. **Use tidylog:: for joins** to verify row counts and match quality
 10. **Use `qs2` for serialization** with `.qs2` extension

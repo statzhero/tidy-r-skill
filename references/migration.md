@@ -1,4 +1,4 @@
-# Migration: Base R and Old Tidyverse to Modern Patterns
+# Migration: Base R and Old Tidyverse to Modern Patterns (dplyr >=1.2.0)
 
 ## Base R to Modern Tidyverse
 
@@ -8,7 +8,7 @@
 subset(data, condition)          # -> filter(data, condition)
 data[order(data$x), ]            # -> arrange(data, x)
 aggregate(x ~ y, data, mean)     # -> summarise(data, mean(x), .by = y)
-merge(x, y, by = "id")           # -> left_join(x, y, by = join_by(id))
+merge(x, y, by = "id")           # -> inner_join(x, y, by = join_by(id))
 ```
 
 ### Functional programming
@@ -28,7 +28,7 @@ substr(text, 1, 5)               # -> str_sub(text, 1, 5)
 nchar(text)                      # -> str_length(text)
 strsplit(text, ",")              # -> str_split(text, ",")
 tolower(text)                    # -> str_to_lower(text)
-sprintf("Hello %s", name)       # -> str_glue("Hello {name}")
+sprintf("Hello %s", name)        # -> str_glue("Hello {name}")
 ```
 
 ## Old to New Tidyverse Patterns
@@ -46,7 +46,7 @@ map(x, function(x) x + 1)       # -> map(x, \(x) x + 1)
 map(x, ~ .x + 1)                # -> map(x, \(x) x + 1)
 ```
 
-### Grouping (dplyr 1.1+)
+### Grouping (dplyr >=1.2.0)
 
 ```r
 group_by(data, x) |>
@@ -78,7 +78,7 @@ summarise(data, x, .groups = "drop") # -> reframe(data, x)
 gather()/spread()                # -> pivot_longer()/pivot_wider()
 ```
 
-### String separation (tidyr 1.3+)
+### String separation (tidyr >=1.3.0)
 
 ```r
 separate(col, into = c("a", "b"))
@@ -88,7 +88,7 @@ extract(col, into = "x", regex)
 # -> separate_wider_regex(col, patterns = c(x = regex))
 ```
 
-### Superseded purrr functions (purrr 1.0+)
+### Superseded purrr functions (purrr >=1.0.0)
 
 ```r
 map_dfr(x, f)                    # -> map(x, f) |> list_rbind()
@@ -98,7 +98,7 @@ pmap_dfr(list, f)                # -> pmap(list, f) |> list_rbind()
 imap_dfr(x, f)                   # -> imap(x, f) |> list_rbind()
 ```
 
-### Recoding and replacing (dplyr 1.2+)
+### Recoding and replacing (dplyr >=1.2.0)
 
 ```r
 case_match(x, val ~ result)      # -> recode_values(x, val ~ result)
@@ -118,7 +118,7 @@ na_if(x, val)                    # -> replace_values(x, val ~ NA)
 tidyr::replace_na(x, default)    # -> replace_values(x, NA ~ default)
 ```
 
-### Filter family (dplyr 1.2+)
+### Filter family (dplyr >=1.2.0)
 
 ```r
 # Dropping rows with NA-safe negation
@@ -131,6 +131,16 @@ filter(cond1 | cond2 | cond3)    # -> filter(when_any(cond1, cond2, cond3))
 filter(cond1 & cond2 & cond3)    # -> filter(when_all(cond1, cond2, cond3))
 ```
 
+### Reading data
+
+```r
+read.csv("file.csv")                 # -> read_csv("file.csv")  # tibble, faster, better type detection
+read.csv("file.csv", sep = "\t")     # -> read_tsv("file.csv")
+read.csv2("file.csv")                # -> read_csv2("file.csv")  # semicolon-delimited
+```
+
+For large files (>100 MB), `vroom::vroom()` is faster than `read_csv()`. For small files the difference is negligible.
+
 ### Serialization
 
 ```r
@@ -138,7 +148,7 @@ qs::qsave(x, "file.qs")         # -> qs2::qs_save(x, "file.qs2")
 qs::qread("file.qs")            # -> qs2::qs_read("file.qs2")
 ```
 
-### Defunct in dplyr 1.2 (now errors)
+### Defunct in dplyr >=1.2.0 (now errors)
 
 ```r
 # Underscored SE verbs (defunct since 1.2, deprecated since 0.7)
