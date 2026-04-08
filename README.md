@@ -56,6 +56,18 @@ The skill should guide the model toward `.by` grouping and native pipe.
 
 This skill stands on the shoulders of giants, but I built it over many iterations and can no longer trace any single influence. I regret not keeping better records. If you recognize your ideas here, please open an issue so I can credit you properly.
 
+## References
+
+| Topic | Source |
+|-------|--------|
+| Tidyverse style guide | https://style.tidyverse.org/ |
+| dplyr | https://dplyr.tidyverse.org/ |
+| stringr | https://stringr.tidyverse.org/ |
+| tidyselect | https://tidyselect.r-lib.org/ |
+| cli (error messages) | https://cli.r-lib.org/ |
+| readr | https://readr.tidyverse.org/ |
+
+
 ## License
 
 CC-BY-4.0
