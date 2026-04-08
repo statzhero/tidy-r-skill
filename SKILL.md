@@ -1,7 +1,7 @@
 ---
 name: tidy-r
 description: >
-  Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code to modern patterns, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe operations, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidy selection, stringr patterns, naming conventions, and migration from base R or older tidyverse APIs. Use the R (btw) MCP tools to resolve function documentation and library references automatically.
+  Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidyselect helpers, .data/.env pronouns, stringr, naming conventions, and readr.
 author: Ulrich Atz
 license: CC-BY-4.0
 metadata:
@@ -14,24 +14,6 @@ allowed-tools: Read, Edit, Write, Grep, Glob, Bash, mcp__r-btw__*
 # Modern Tidyverse R Reference
 
 Code from blog posts and StackOverflow often uses deprecated APIs, magrittr pipes, or base R patterns where a modern tidyverse function exists. This guide encodes the current recommended approach.
-
-## When to use this skill
-
-- Writing new R code with dplyr, tidyr, stringr, purrr, or other tidyverse packages
-- Reviewing or refactoring existing R code for modern patterns
-- Migrating from base R, magrittr pipes, or older tidyverse APIs
-- Applying tidyverse style conventions (naming, spacing, error handling)
-- Choosing between similar functions (e.g., `case_when` vs `recode_values`)
-- Working with joins, grouping, recoding, or string manipulation in R
-
-## When NOT to use this skill
-
-- Writing data.table code (different paradigm)
-- Pure base R projects that intentionally avoid tidyverse
-- Shiny UI/server logic (use a Shiny-specific skill)
-- Package development internals (NAMESPACE, DESCRIPTION, roxygen)
-- ggplot2 visualization (use the socviz skill)
-- Statistical modeling or Bayesian analysis
 
 ## Reference files
 
@@ -54,25 +36,6 @@ For requests that span multiple topics (e.g., "rewrite this old code" touches mi
 1. **Use modern tidyverse patterns** -- Prioritize dplyr 1.2+ features, native pipe, and current APIs
 2. **Write readable code first** -- Optimize only when necessary
 3. **Follow tidyverse style guide** -- Consistent naming, spacing, and structure
-4. **Use R MCP tools** -- Automatically resolve function documentation and library references without being asked. If the `mcp__r-btw__*` tools are unavailable, fall back to running R help via Bash (see below)
-
-### R documentation lookup fallback
-
-When `mcp__r-btw__*` tools are available, use them to look up function signatures, help pages, and package docs. When they are not available (e.g., the r-btw MCP server is not configured), fall back to Bash:
-
-```bash
-# Help page for a function
-Rscript --vanilla -e '?dplyr::recode_values' 2>/dev/null || Rscript --vanilla -e 'utils::help("recode_values", package = "dplyr")'
-
-# Function signature / arguments
-Rscript --vanilla -e 'args(dplyr::recode_values)'
-
-# List exported functions in a package
-Rscript --vanilla -e 'ls("package:dplyr")'
-
-# Check if a package is installed
-Rscript --vanilla -e 'requireNamespace("tidyna", quietly = TRUE)'
-```
 
 ## Quick reference
 
@@ -126,27 +89,6 @@ Use `cli::cli_abort()` with problem statement + bullets, never `stop()`.
 - `map_*()` over `sapply()` for type stability
 - `set.seed()` with date-time, never 42
 - `qs2::qs_save()`/`qs2::qs_read()`, never `qs`
-
-## Anti-patterns
-
-| Avoid | Use instead |
-|-------|-------------|
-| `%>%` | `|>` |
-| `function(x)` or `~` | `\(x)` |
-| `by = c("a" = "b")` | `by = join_by(a == b)` |
-| `multiple = "error"` in joins | `relationship = "many-to-one"` (or `"one-to-one"`) |
-| `sapply()` | `map_*()` (type-stable) |
-| `group_by() \|> ... \|> ungroup()` | `.by` argument |
-| `cat()` for messages | `message()` or `cli::cli_inform()` |
-| `stop()` for errors | `cli::cli_abort()` |
-| `distinct(id)` | `distinct(id, .keep_all = TRUE)` |
-| `mean(x, na.rm = TRUE)` | `mean(x)` with tidyna loaded |
-| `case_match(x, ...)` | `recode_values(x, ...)` |
-| `recode(x, ...)` | `recode_values(x, ...)` or `replace_values(x, ...)` |
-| `filter(x != val \| is.na(x))` | `filter_out(x == val)` |
-| `coalesce(x, default)` | `replace_values(x, NA ~ default)` |
-| `na_if(x, val)` | `replace_values(x, val ~ NA)` |
-| `qs::qsave()` / `qs::qread()` | `qs2::qs_save()` / `qs2::qs_read()` |
 
 ## Example
 
