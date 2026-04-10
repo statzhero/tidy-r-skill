@@ -70,4 +70,5 @@ This skill stands on the shoulders of giants, but I built it over many iteration
 
 ## License
 
-CC-BY-4.0
+MIT • Ulrich Atz ([ulrichatz](https://bsky.app/profile/ulrichatz.org))
+
