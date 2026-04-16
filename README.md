@@ -1,7 +1,7 @@
 # tidy-r-skill
 
-An LLM skill for modern tidyverse R using R 4.5+, tidyverse 2.0+, and dplyr 1.2+.
-
+ An LLM skill for modern tidyverse R using R >= 4.5.0, tidyverse >= 2.0.0, and dplyr >= 1.2.0.
+ 
 ## What does it do?
 
 When you ask an LLM to write R code, it draws on its training data, which mixes base R, old StackOverflow posts, deprecated tidyverse APIs, and current best practice. This skill gives the model a structured reference for modern tidyverse patterns so it produces clean, idiomatic code with less back-and-forth.
