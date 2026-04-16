@@ -60,9 +60,9 @@ str_to_lower(text)                    # lowercase
 str_to_upper(text)                    # uppercase
 str_to_title(text)                    # title case
 str_to_sentence(text)                # sentence case
-str_to_snake(text)                    # snake_case (stringr >=1.6.0)
-str_to_camel(text)                    # camelCase (stringr >=1.6.0)
-str_to_kebab(text)                    # kebab-case (stringr >=1.6.0)
+str_to_snake(text)                    # snake_case (stringr >= 1.6.0)
+str_to_camel(text)                    # camelCase (stringr >= 1.6.0)
+str_to_kebab(text)                    # kebab-case (stringr >= 1.6.0)
 str_trim(text)                        # remove leading/trailing whitespace
 str_squish(text)                      # trim + collapse internal whitespace
 str_pad(text, 10, side = "left")      # pad to fixed width
@@ -76,7 +76,7 @@ str_glue("Hello {name}, you scored {score}!")
 str_glue_data(df, "{name}: {value}")
 ```
 
-### Case-insensitive matching (stringr >=1.6.0)
+### Case-insensitive matching (stringr >= 1.6.0)
 
 ```r
 str_ilike(text, "hello*")              # SQL ILIKE-style, case-insensitive glob
@@ -109,9 +109,9 @@ str_detect(text, boundary("word"))     # word boundaries
 | `str_to_lower(text)` | `tolower(text)` | |
 | `str_to_upper(text)` | `toupper(text)` | |
 | `str_to_title(text)` | `tools::toTitleCase(text)` | |
-| `str_to_snake(text)` | -- | stringr >=1.6.0 |
-| `str_to_camel(text)` | -- | stringr >=1.6.0 |
-| `str_to_kebab(text)` | -- | stringr >=1.6.0 |
-| `str_ilike(text, "pat*")` | -- | case-insensitive glob, stringr >=1.6.0 |
+| `str_to_snake(text)` | -- | stringr >= 1.6.0 |
+| `str_to_camel(text)` | -- | stringr >= 1.6.0 |
+| `str_to_kebab(text)` | -- | stringr >= 1.6.0 |
+| `str_ilike(text, "pat*")` | -- | case-insensitive glob, stringr >= 1.6.0 |
 | `str_trim(text)` | `trimws(text)` | |
 | `str_glue("Hello {x}")` | `sprintf("Hello %s", x)` | More readable |

@@ -5,9 +5,9 @@ description: >
 author: Ulrich Atz
 license: MIT
 metadata:
-  r_version: ">=4.5.0"
-  tidyverse_version: ">=2.0.0"
-  dplyr_version: ">=1.2.0"
+  r_version: ">= 4.5.0"
+  tidyverse_version: ">= 2.0.0"
+  dplyr_version: ">= 1.2.0"
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash, mcp__r-btw__*
 ---
 
@@ -62,7 +62,7 @@ Use newspaper style: high-level logic first, helpers below. Don't define functio
 - Use `relationship`, `unmatched`, `na_matches` for quality control
 - Use `tidylog::` prefix for join verification
 
-### Recoding and replacing (dplyr >=1.2.0)
+### Recoding and replacing (dplyr >= 1.2.0)
 
 | Task | Function |
 |------|----------|

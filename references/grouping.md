@@ -1,4 +1,4 @@
-# Modern Grouping and Column Operations (dplyr >=1.2.0)
+# Modern Grouping and Column Operations (dplyr >= 1.2.0)
 
 ## Per-operation grouping with .by
 
