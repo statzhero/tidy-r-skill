@@ -98,6 +98,15 @@ pmap_dfr(list, f)                # -> pmap(list, f) |> list_rbind()
 imap_dfr(x, f)                   # -> imap(x, f) |> list_rbind()
 ```
 
+### Conditionals (dplyr >= 1.1.0)
+
+```r
+if_else(cond, "yes", NA_character_)  # -> if_else(cond, "yes", NA)
+if_else(cond, 1L, NA_integer_)       # -> if_else(cond, 1L, NA)
+```
+
+Plain `NA` now works in `if_else()` and `case_when()`. They take the common type of `true`, `false`, and `missing` automatically.
+
 ### Recoding and replacing (dplyr >= 1.2.0)
 
 ```r

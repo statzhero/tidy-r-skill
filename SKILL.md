@@ -76,7 +76,8 @@ Use newspaper style: high-level logic first, helpers below. Don't define functio
 
 ### NA handling
 
-Load `tidyna` to make `mean`, `sum`, `sd`, etc. ignore NA by default. Avoid repetitive `na.rm = TRUE`.
+- `if_else()` and `case_when()` accept plain `NA` (since dplyr 1.1.0) -- no need for `NA_character_`, `NA_real_`, etc.
+- Load `tidyna` to make `mean`, `sum`, `sd`, etc. ignore NA by default. Avoid repetitive `na.rm = TRUE`.
 
 ### Error handling
 
