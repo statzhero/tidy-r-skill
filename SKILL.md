@@ -2,9 +2,9 @@
 name: tidy-r
 description: >
   Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidyselect helpers, .data/.env pronouns, stringr, naming conventions, and readr.
-author: Ulrich Atz
-license: MIT
+license: CC-BY-4.0
 metadata:
+  author: Ulrich Atz
   r_version: ">= 4.5.0"
   tidyverse_version: ">= 2.0.0"
   dplyr_version: ">= 1.2.0"
