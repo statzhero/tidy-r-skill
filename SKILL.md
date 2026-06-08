@@ -1,7 +1,6 @@
 ---
 name: tidy-r
-description: >
-  Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidyselect helpers, .data/.env pronouns, stringr, naming conventions, and readr.
+description: Modern tidyverse patterns, style guide, and migration guidance for R development. Use this skill when writing R code, reviewing tidyverse code, updating legacy R code, or enforcing consistent style. Covers native pipe usage, join_by() syntax, .by grouping, pick/across/reframe, filter_out/when_any/when_all, recode_values/replace_values/replace_when, tidyselect helpers, .data/.env pronouns, stringr, naming conventions, and readr.
 license: CC-BY-4.0
 metadata:
   author: Ulrich Atz
@@ -30,6 +29,17 @@ Consult the appropriate reference file for detailed patterns and examples:
 | **Migration** | [migration.md](references/migration.md) | Updating old code, base R conversion, deprecated functions |
 
 For requests that span multiple topics (e.g., "rewrite this old code" touches migration + style), read multiple files.
+
+## Related skills
+
+tidy-r is the default for in-memory tidyverse work. Reach for a companion skill when the task outgrows it -- the data-frame workflow and `|>` style carry over:
+
+| Reach for | When |
+|-----------|------|
+| **collapse-r** | Performance matters on large or heavily-grouped in-memory data, or you need weighted statistics or panel/time-aware ops (lags, growth, between/within). f-prefixed verbs. |
+| **duckplyr-r** | Local data too big for RAM, or reading Parquet/CSV/JSON, while keeping dplyr syntax (DuckDB engine, dplyr-identical results). |
+| **dbplyr-r** | Data lives in a remote/connection database (Postgres, Snowflake, BigQuery, SQL Server); dplyr is translated to SQL and run server-side. |
+| **r-btw-cli** | Look up R help/vignettes, run `R CMD check` / tests / `document()`, or search CRAN from the command line. |
 
 ## Core principles
 
