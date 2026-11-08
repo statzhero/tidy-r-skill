@@ -100,6 +100,7 @@ Use `cli::cli_abort()` with problem statement + bullets, never `stop()`.
 - `map_*()` over `sapply()` for type stability
 - `set.seed()` with date-time, never 42
 - `qs2::qs_save()`/`qs2::qs_read()`, never `qs`
+- `mutate(.keep = "none")` or `mutate()` then `select()`, never `transmute()` (superseded in dplyr 1.1.0)
 
 ## Example
 

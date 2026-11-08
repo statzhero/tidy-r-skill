@@ -66,6 +66,13 @@ by = c("a" = "b")                # -> by = join_by(a == b)
 across(starts_with("x"))         # -> pick(starts_with("x"))  # for selection only
 ```
 
+### Keeping only new columns (dplyr >= 1.1.0)
+
+```r
+transmute(data, id, z = x + y)   # -> mutate(data, id, z = x + y, .keep = "none")
+                                 #    or mutate(data, z = x + y) |> select(id, z)
+```
+
 ### Multi-row summaries
 
 ```r
