@@ -79,8 +79,10 @@ str_glue_data(df, "{name}: {value}")
 ### Case-insensitive matching (stringr >= 1.6.0)
 
 ```r
-str_ilike(text, "hello*")              # SQL ILIKE-style, case-insensitive glob
-# Replaces: str_like(text, "hello*", ignore_case = TRUE)
+str_ilike(text, "hello%")              # SQL ILIKE: case-insensitive
+str_like(text, "hello%")               # SQL LIKE: always case-sensitive
+# SQL wildcards, not globs: % matches any number of characters, _ matches one.
+# The pattern must match the whole string.
 # str_like() ignore_case argument is deprecated; use str_ilike() instead
 ```
 
@@ -112,6 +114,6 @@ str_detect(text, boundary("word"))     # word boundaries
 | `str_to_snake(text)` | -- | stringr >= 1.6.0 |
 | `str_to_camel(text)` | -- | stringr >= 1.6.0 |
 | `str_to_kebab(text)` | -- | stringr >= 1.6.0 |
-| `str_ilike(text, "pat*")` | -- | case-insensitive glob, stringr >= 1.6.0 |
+| `str_ilike(text, "pat%")` | -- | case-insensitive SQL LIKE, stringr >= 1.6.0 |
 | `str_trim(text)` | `trimws(text)` | |
 | `str_glue("Hello {x}")` | `sprintf("Hello %s", x)` | More readable |

@@ -116,13 +116,21 @@ data |>
   )
 ```
 
-**When to keep separate `mutate()` calls:**
-
-- **Different `.by` variables** between the calls
-- **Sequential dependency**: a later column uses a column created in an earlier `mutate()` within the same grouped context (the new column must exist before the group-level aggregate can reference it)
+A later column can use a column created earlier in the same `mutate()`, also with `.by`:
 
 ```r
-# Separate calls needed: different .by variables
+# Good - b_rank uses b_centered from the same call
+data |>
+  mutate(
+    b_centered = b - mean(b),
+    b_rank = row_number(desc(b_centered)),
+    .by = group
+  )
+```
+
+Keep separate `mutate()` calls only when the `.by` variables differ:
+
+```r
 data |>
   mutate(
     x_lag = dplyr::lag(x),
@@ -131,17 +139,6 @@ data |>
   mutate(
     above_med = x_lag > median(x_lag),
     .by = year
-  )
-
-# Separate calls needed: b_rank depends on b_centered
-data |>
-  mutate(
-    b_centered = b - mean(b),
-    .by = group
-  ) |>
-  mutate(
-    b_rank = row_number(desc(b_centered)),
-    .by = group
   )
 ```
 

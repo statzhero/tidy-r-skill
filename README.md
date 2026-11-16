@@ -70,6 +70,7 @@ This skill stands on the shoulders of giants, but I built it over many iteration
 
 ## Changelog
 
+- **2026-11-16** — A quick audit against current releases: fixed `recode_values(unmatched =)`, `str_ilike()` wildcards, `unmatched = "error"` join semantics, and the `mutate(.by)` consolidation rule.
 - **2026-11-08** — Replaced superseded `transmute()` with `mutate(.keep = "none")` or `mutate()` then `select()` (dplyr >= 1.1.0).
 - **2026-04-24** — Added `if_else()`/`case_when()` plain `NA` guidance (dplyr >= 1.1.0).
 - **2026-04-10** — Updated license.

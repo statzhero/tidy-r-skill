@@ -1,6 +1,6 @@
 # Recoding, Replacing, and Filtering (dplyr >= 1.2.0)
 
-dplyr 1.2 introduced a family of functions for recoding and replacing values, and for NA-safe filtering. These replace older patterns (`case_match`, `recode`, `coalesce`, `na_if`, negated filters).
+dplyr 1.2 introduced a family of functions for recoding and replacing values, and for NA-safe filtering. These replace older patterns (`case_match`, `recode`, negated filters) and cover the most common uses of `coalesce` and `na_if`, which remain fully supported.
 
 ## The recode/replace family
 
@@ -33,16 +33,18 @@ likert |>
   mutate(score = recode_values(score, from = lookup$from, to = lookup$to))
 ```
 
-### With .unmatched = "error" for safety
+### With unmatched = "error" for safety
+
+The arguments of `recode_values()` have no dot prefix (`default`, `unmatched`, `ptype`), unlike `case_when()` (`.default`, `.unmatched`, `.ptype`).
 
 ```r
-# Errors if any value has no match
+# Errors if any value has no match, including NA
 score |>
   recode_values(
     1 ~ "Low",
     2 ~ "Medium",
     3 ~ "High",
-    .unmatched = "error"
+    unmatched = "error"
   )
 ```
 
@@ -55,9 +57,11 @@ case_when(score == 1 ~ "Strongly disagree", score == 2 ~ "Disagree", ...)
 # Avoid - case_match() is soft-deprecated in dplyr 1.2
 case_match(score, 1 ~ "Strongly disagree", 2 ~ "Disagree", ...)
 
-# Avoid - recode() is soft-deprecated
+# Avoid - recode() is superseded
 recode(score, `1` = "Strongly disagree", `2` = "Disagree", ...)
 ```
+
+`recode_values()` returns `NA` for unmatched values (or `default`). `recode()` passed unmatched values through, so its direct replacement is `replace_values()`.
 
 ## replace_values()
 
@@ -73,11 +77,14 @@ name |>
   )
 ```
 
-### Replace NA (replaces coalesce/tidyr::replace_na)
+### Replace NA (instead of coalesce/tidyr::replace_na)
 
 ```r
 x |> replace_values(NA ~ 0)
+x |> replace_values(NA ~ y)   # y is a vector the same size as x
 ```
+
+`replace_values()` keeps the type of `x`, so `replace_values(int_col, NA ~ 0.5)` errors. Use `coalesce()` when the type should widen or when taking the first non-missing value across several vectors: `coalesce(x, y, z)`.
 
 ### Convert sentinel values to NA (replaces na_if)
 
@@ -122,9 +129,12 @@ tier <- case_when(
   time < 23 ~ "A",
   time < 27 ~ "B",
   time < 30 ~ "C",
+  is.na(time) ~ NA,
   .unmatched = "error"
 )
 ```
+
+Missing values count as unmatched. Handle them explicitly, even if only with `is.na(x) ~ NA`.
 
 ## filter_out()
 
@@ -178,7 +188,7 @@ data |>
 | Old pattern | New pattern |
 |-------------|-------------|
 | `case_match(x, val ~ result)` | `recode_values(x, val ~ result)` |
-| `recode(x, old = "new")` | `recode_values(x, "old" ~ "new")` |
+| `recode(x, old = "new")` | `replace_values(x, "old" ~ "new")` (keeps unmatched values) |
 | `case_when(..., .default = x)` | `x \|> replace_when(...)` |
 | `coalesce(x, default)` | `replace_values(x, NA ~ default)` |
 | `na_if(x, val)` | `replace_values(x, val ~ NA)` |

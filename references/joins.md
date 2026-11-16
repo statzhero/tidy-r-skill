@@ -64,8 +64,14 @@ inner_join(x, y, by = join_by(id), relationship = "one-to-many")
 
 ### Ensure all rows match
 
+`unmatched = "error"` only checks rows that the join would drop. A left join checks `y`, a right join checks `x`, and an inner join checks both. A left join therefore never errors when `x` rows find no match.
+
 ```r
+# Every row of x and every row of y must match
 inner_join(x, y, by = join_by(id), unmatched = "error")
+
+# Every row of x must match; unmatched y rows are dropped silently
+inner_join(x, y, by = join_by(id), unmatched = c("error", "drop"))
 ```
 
 ### Prevent NA matching (recommended)
@@ -78,12 +84,13 @@ left_join(x, y, by = join_by(id), na_matches = "never")
 ### Combining guards for production code
 
 ```r
+# Every sale must have a product; products without sales are fine
 sales |>
-  left_join(
+  inner_join(
     products,
     by = join_by(product_id),
     relationship = "many-to-one",
-    unmatched = "error",
+    unmatched = c("error", "drop"),
     na_matches = "never"
   )
 ```
@@ -119,5 +126,7 @@ result <- transactions |>
 - **Critical filters** with `tidylog::filter()` to verify expected row counts
 - **Critical mutates** with `tidylog::mutate()` to verify expected changes
 - **Any operation where silent data loss is a risk**
+
+tidylog has no wrappers for `filter_out()`, `reframe()`, or `cross_join()`; call dplyr directly for those.
 
 Don't use tidylog in production code, inside functions, or loops where output would be too verbose. It's for interactive verification only.

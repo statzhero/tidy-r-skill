@@ -73,6 +73,8 @@ transmute(data, id, z = x + y)   # -> mutate(data, id, z = x + y, .keep = "none"
                                  #    or mutate(data, z = x + y) |> select(id, z)
 ```
 
+`mutate(.keep = "none")` leaves existing columns in their original position, whereas `transmute()` ordered columns as written. Use the `select()` form when column order matters.
+
 ### Multi-row summaries
 
 ```r
@@ -105,6 +107,8 @@ pmap_dfr(list, f)                # -> pmap(list, f) |> list_rbind()
 imap_dfr(x, f)                   # -> imap(x, f) |> list_rbind()
 ```
 
+`map_chr()` no longer coerces numbers or logicals to strings and errors instead (purrr >= 1.2.0). Convert explicitly: `map_chr(x, \(x) as.character(f(x)))`.
+
 ### Conditionals (dplyr >= 1.1.0)
 
 ```r
@@ -118,8 +122,8 @@ Plain `NA` now works in `if_else()` and `case_when()`. They take the common type
 
 ```r
 case_match(x, val ~ result)      # -> recode_values(x, val ~ result)
-recode(x, old = "new")           # -> recode_values(x, "old" ~ "new")
-                                 #    or replace_values(x, "old" ~ "new")
+recode(x, old = "new")           # -> replace_values(x, "old" ~ "new")  # keeps unmatched values
+                                 #    or recode_values(x, "old" ~ "new")  # unmatched become NA
 
 # Conditional replacement: case_when with .default = x -> replace_when
 case_when(
@@ -153,6 +157,7 @@ filter(cond1 & cond2 & cond3)    # -> filter(when_all(cond1, cond2, cond3))
 read.csv("file.csv")                 # -> read_csv("file.csv")  # tibble, faster, better type detection
 read.csv("file.csv", sep = "\t")     # -> read_tsv("file.csv")
 read.csv2("file.csv")                # -> read_csv2("file.csv")  # semicolon-delimited
+read_csv("x,y\n1,2")                 # -> read_csv(I("x,y\n1,2"))  # literal data needs I() (readr >= 2.2.0)
 ```
 
 For large files (>100 MB), `vroom::vroom()` is faster than `read_csv()`. For small files the difference is negligible.
@@ -179,6 +184,17 @@ summarise_each()                 # -> summarise(across(...))
 
 # Multi-row summarise (defunct since 1.2, deprecated since 1.1)
 summarise(data, x)               # -> reframe(data, x) for multi-row results
+```
+
+### Deprecated, now warn in dplyr >= 1.2.0
+
+```r
+cur_data()                           # -> pick(everything())
+across(x, mean, na.rm = TRUE)        # -> across(x, \(x) mean(x, na.rm = TRUE))
+left_join(x, y, by = character())    # -> cross_join(x, y)
+
+# case_when() with scalar conditions -> if / else if / else
+case_when(code == 1L ~ x, .default = y)   # code is length 1, x is a vector
 ```
 
 ### For side effects

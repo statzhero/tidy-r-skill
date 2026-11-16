@@ -7,7 +7,6 @@ Based on https://style.tidyverse.org/
 - Use **snake_case**: lowercase letters, numbers, underscores only
 - Variables = **nouns**, functions = **verbs**
 - Avoid reusing common function/variable names
-- Prefix non-standard function arguments with `.` (e.g., `.data`, `.by`)
 - Avoid dots in names except for S3 methods
 
 ```r
@@ -109,14 +108,28 @@ if (condition) {
 
 ## Functions
 
-**Anonymous functions**: use `\(x)` for short lambdas
+**Anonymous functions**: use `\(x)` for short, single-line lambdas. Use `function(x) { ... }` for multi-line anonymous functions and for named functions. Never use the `~` formula shorthand. Use informative argument names.
 
 ```r
 # Good
-map(x, \(x) x + 1)
+map(xs, \(x) mean((x + 5)^2))
+
+map(xs, function(x) {
+  mean((x + 5)^2)
+})
+
+cv <- function(x) {
+  sd(x) / mean(x)
+}
 
 # Bad
-map(x, function(x) x + 1)
+map(xs, ~ mean((.x + 5)^2))
+
+map(xs, \(x) {
+  mean((x + 5)^2)
+})
+
+cv <- \(x) sd(x) / mean(x)
 ```
 
 **Return**: use `return()` only for early returns; rely on implicit return otherwise
@@ -136,13 +149,20 @@ check_input <- function(x) {
 }
 ```
 
-**Multi-line definitions**: single-indent style preferred
+**Multi-line definitions**: each argument on its own line, in single-indent or hanging-indent style. The examples in this skill use single-indent.
 
 ```r
+# Good - single-indent
 long_function_name <- function(
   a = "argument",
   b = "argument"
 ) {
+  # body
+}
+
+# Good - hanging-indent
+long_function_name <- function(a = "argument",
+                               b = "argument") {
   # body
 }
 ```
@@ -152,6 +172,8 @@ long_function_name <- function(
 - Use `|>` (not `%>%`)
 - Space before pipe, newline after
 - Indent continuation by 2 spaces
+- A short pipe on a single line is acceptable, but one function per line is better
+- For data analysis, pipe into any call that spans multiple lines, even for a single step
 
 ```r
 # Good
@@ -160,8 +182,15 @@ data |>
   mutate(y = x * 2) |>
   summarise(mean(y))
 
-# Bad
-data |> filter(x > 0) |> mutate(y = x * 2)
+# Ok - short pipe on one line
+data |> filter(x > 0) |> pull(y)
+
+# Bad - multi-line call without a pipe
+summarise(
+  data,
+  mean_y = mean(y),
+  .by = group
+)
 ```
 
 **Avoid pipes when**:
@@ -172,7 +201,7 @@ data |> filter(x > 0) |> mutate(y = x * 2)
 
 - Start with `# ` (hash + space)
 - Explain **why**, not what
-- Use sentence case
+- Use sentence case; end with a full stop only if the comment has two or more sentences
 
 ```r
 # Skip NA values because downstream analysis requires complete cases

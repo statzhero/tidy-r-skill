@@ -53,7 +53,8 @@ tidy-r is the default for in-memory tidyverse work. Reach for a companion skill 
 
 - Always `|>`, never `%>%`
 - Use `_` placeholder for non-first arguments: `x |> f(1, y = _)`. The placeholder must be named and used exactly once.
-- Always `\(x)`, never `function(x)` or `~` in map/keep/etc.
+- Use `\(x)` for short, single-line anonymous functions in map/keep/etc. Use `function(x) { ... }` when the body spans multiple lines. Never `~`.
+- Never `\(x)` for named functions: `cv <- function(x) sd(x) / mean(x)`
 
 ### Code organization
 
@@ -63,13 +64,14 @@ Use newspaper style: high-level logic first, helpers below. Don't define functio
 
 - Prefer `.by` for per-operation grouping; use `group_by()` when grouping must persist across multiple operations
 - Never add `ungroup()` before or after `.by` -- it always returns ungrouped data
-- Consolidate multiple `mutate(.by = x)` calls into one when they share the same `.by`; keep separate only when `.by` differs or a later column depends on an earlier one
+- Consolidate multiple `mutate(.by = x)` calls into one when they share the same `.by`; keep separate only when `.by` differs. A later column can use an earlier one within the same call.
 - Place `.by` on its own line for readability
 
 ### Joins
 
 - Use `join_by()`, never `c("a" = "b")`
 - Use `relationship`, `unmatched`, `na_matches` for quality control
+- `unmatched = "error"` only checks rows the join would drop: `y` in a left join, both tables in an inner join. To assert that every `x` row finds a match, use `inner_join()`.
 - Use `tidylog::` prefix for join verification
 
 ### Recoding and replacing (dplyr >= 1.2.0)
@@ -130,9 +132,11 @@ island_summary <- penguins |>
     n = n(),
     .by = c(species, island)
   ) |>
-  left_join(
+  # inner_join so that unmatched = "error" checks both tables
+  inner_join(
     island_coords,
     by = join_by(island),
+    relationship = "many-to-one",
     unmatched = "error"
   ) |>
   arrange(species, island)
@@ -143,7 +147,7 @@ island_summary <- penguins |>
 1. **Name variables as nouns, functions as verbs** in snake_case
 2. **Explain "why" in comments**, not "what"
 3. **Place `.by` on its own line** for readability
-4. **Use `.unmatched = "error"`** in `case_when()` and `recode_values()` for defensive programming
+4. **Error on unmatched values** for defensive programming: `.unmatched = "error"` in `case_when()`, `unmatched = "error"` (no dot) in `recode_values()`
 5. **Use `recode_values()` over `case_match()`** (dplyr 1.2+ preferred API)
 6. **Use `replace_when()` over `case_when()` with `.default`** when updating a column in place
 7. **Prefer `filter_out()` over negated `filter()`** for NA-safe row removal
